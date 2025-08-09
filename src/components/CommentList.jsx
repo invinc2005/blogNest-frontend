@@ -102,8 +102,6 @@ const CommentList = ({ postId }) => {
                         comment.edited ? comment.updatedAt : comment.createdAt,
                         comment.edited
                     );
-                    console.log("Comment timestamp:", timestamp);
-                    console.log("Comment isEdited:", comment);
                     return (
                         <React.Fragment key={comment.id}>
                             <ListItem alignItems="flex-start">

@@ -73,12 +73,14 @@ const PostCard = ({ post }) => {
                 <Typography gutterBottom variant="h5" component="h2">{post.title}</Typography>
                 <Typography variant="body2" color="text.secondary">{snippet}</Typography>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'space-between' }}>
+            <CardActions sx={{ 
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                pt: 0  }}>
                 <Button size="small" component={Link} to={`/posts/${post.id}`} startIcon={<AutoStoriesSharpIcon />}>
                     Read More
                 </Button>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {/* --- READ-ONLY LIKE COUNT --- */}
                     <FavoriteIcon sx={{ color: 'action.disabled', mr: 0.5, fontSize: '1rem' }} />
                     <Typography variant="body2" color="text.secondary" sx={{ mr: 1.5 }}>
                         {post.likeCount}

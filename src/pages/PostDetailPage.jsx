@@ -15,7 +15,9 @@ import {
     Stack, 
     Divider,
     Tooltip,
-    Skeleton 
+    Skeleton,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -26,6 +28,7 @@ import { resolveImageUrl } from '../utils/urlUtils';
 import CommentList from '../components/CommentList';
 import AddCommentForm from '../components/AddCommentForm';
 import AvatarGroup from '@mui/material/AvatarGroup';
+
 function stringToColor(string) {
   let hash = 0;
   for (let i = 0; i < string.length; i += 1) {
@@ -38,10 +41,13 @@ function stringToColor(string) {
   }
   return color;
 }
+
 const PostDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user, isAuthenticated, likedPostIds, handleLike, handleUnlike, showSnackbar } = useAuth();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -49,7 +55,6 @@ const PostDetailPage = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [commentUpdateTrigger, setCommentUpdateTrigger] = useState(0);
     const [imageLoading, setImageLoading] = useState(true); 
-        console.log("Data being rendered on PostDetailPage:", post);
 
     useEffect(() => {
         setImageLoading(true);
@@ -89,6 +94,8 @@ const PostDetailPage = () => {
                 handleLike(post.id);
                 setPost(prevPost => ({ ...prevPost, likeCount: prevPost.likeCount + 1 }));
             }
+            const updatedPost = await getPostById(id);
+            setPost(prevPost => ({ ...prevPost, likers: updatedPost.likers }));
         } catch (error) {
             console.error("Error updating like:", error);
             showSnackbar("Failed to update like.", "error");
@@ -150,16 +157,18 @@ const PostDetailPage = () => {
                         <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
                             {post.title}
                         </Typography>
+                        
+                        {/* Author Info Row */}
                         <Stack 
                             direction="row" 
                             alignItems="center" 
                             spacing={2} 
-                            sx={{ my: 3, color: 'text.secondary' }}
+                            sx={{ mb: 2, color: 'text.secondary' }}
                         >
                             <Avatar sx={{ bgcolor: stringToColor(post.authorUsername) }} src={resolveImageUrl(post.authorProfilePicture)}>
                                 {post.authorUsername.charAt(0).toUpperCase()}
                             </Avatar>
-                            <Box>
+                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                                 <Typography variant="subtitle1" component="div" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
                                     {post.authorUsername}
                                 </Typography>
@@ -167,16 +176,37 @@ const PostDetailPage = () => {
                                     {`Posted on ${formatDate(post.createdAt)} ${post.isEdited ? '(edited)' : ''}`}
                                 </Typography>
                             </Box>
+                        </Stack>
+
+                        <Stack 
+                            direction="row" 
+                            alignItems="center" 
+                            spacing={1}
+                            sx={{ mb: 2 }}
+                        >
                             <Box sx={{ flexGrow: 1 }} />
                             {post.likers && post.likers.length > 0 && (
                                 <Tooltip title="Liked by">
-                                    <AvatarGroup total={post.likeCount} max={4} sx={{ mr: 1 }}>
+                                    <AvatarGroup 
+                                        total={post.likeCount} 
+                                        max={isMobile ? 2 : 4}
+                                        sx={{ 
+                                            mr: 0.5,
+                                            '& .MuiAvatar-root': {
+                                                width: isMobile ? 28 : 32,
+                                                height: isMobile ? 28 : 32,
+                                                fontSize: isMobile ? '0.75rem' : '0.875rem'
+                                            }
+                                        }}
+                                    >
                                         {post.likers.map(liker => (
                                             <Avatar 
                                                 key={liker.displayName}
                                                 alt={liker.displayName} 
                                                 src={resolveImageUrl(liker.profilePictureUrl)}
-                                                sx={{ bgcolor: stringToColor(liker.displayName) }}
+                                                sx={{ 
+                                                    bgcolor: stringToColor(liker.displayName)
+                                                }}
                                             >
                                                 {liker.displayName.charAt(0).toUpperCase()}
                                             </Avatar>
@@ -186,18 +216,19 @@ const PostDetailPage = () => {
                             )}
                             {isAuthenticated && (
                                 <Tooltip title="Like post">
-                                    <IconButton onClick={handleLikeClick}>
+                                    <IconButton onClick={handleLikeClick} size={isMobile ? "small" : "medium"}>
                                         {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
                                     </IconButton>
                                 </Tooltip>
                             )}
-                            <Typography variant="body1">{post.likeCount}</Typography>
+                            <Typography variant={isMobile ? "body2" : "body1"}>{post.likeCount}</Typography>
                             <Tooltip title="Share post">
-                                <IconButton onClick={handleShareClick}>
+                                <IconButton onClick={handleShareClick} size={isMobile ? "small" : "medium"}>
                                     <ShareIcon />
                                 </IconButton>
                             </Tooltip>
                         </Stack>
+
                         <Divider />
                         <Typography variant="body1" sx={{ mt: 3, fontSize: '1.1rem', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
                             {post.content}
@@ -216,7 +247,7 @@ const PostDetailPage = () => {
             {isOwner && <PostActionsSpeedDial postId={id} onDeleteClick={handleDeleteClick} />}
             <ConfirmationDialog
                 open={dialogOpen}
-                onClose={() => setDialogOpen(false)}
+                onClose={() => setDialogOut(false)}
                 onConfirm={handleConfirmDelete}
                 title="Delete Post?"
                 message="Are you sure you want to permanently delete this post?"

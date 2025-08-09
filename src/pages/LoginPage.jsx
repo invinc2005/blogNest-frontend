@@ -46,19 +46,19 @@ const LoginPage = () => {
         }
 
         setLoading(true);
-    try {
-        const response = await login(email, password);
-        authLogin(response.data);
-        navigate('/');
-    } catch (err) {
-        if (err.response && err.response.data) {
-            setError(err.response.data.message || err.response.data);
-        } else {
-            setError('Login failed. An unknown error occurred.');
+        try {
+            const response = await login(email, password);
+            authLogin(response.data,navigate);
+            // navigate('/');
+        } catch (err) {
+            if (err.response && err.response.data) {
+                setError(err.response.data.message || err.response.data);
+            } else {
+                setError('Login failed. An unknown error occurred.');
+            }
+        } finally {
+            setLoading(false);
         }
-    } finally {
-        setLoading(false);
-    }
     };
 
     const blogTitleColor = theme.palette.mode === 'dark' ? 'white' : 'black';
