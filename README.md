@@ -1,5 +1,5 @@
 # BlogNest - Frontend 
-> **Backend Repository:** [Frontend](https://github.com/invinc2005/blogNest-backend)
+> **Backend Repository:** [Backend](https://github.com/invinc2005/blogNest-backend)
 >
 > **Live Application URL:** [BlogNest](https://blog-nesttest.vercel.app/)
 
