@@ -1,7 +1,7 @@
 # BlogNest - Frontend 
-> **Backend Repository:** [https://github.com/your-username/blog-backend](https://github.com/invinc2005/blogNest-backend)
+> **Backend Repository:** [Frontend](https://github.com/invinc2005/blogNest-backend)
 >
-> **Live Application URL:** [https://your-frontend-url.vercel.app/](https://blog-nesttest.vercel.app/)
+> **Live Application URL:** [BlogNest](https://blog-nesttest.vercel.app/)
 
 
 This is the React frontend for BlogNest, a modern full-stack blogging platform. Built with Vite and Material-UI, it provides a seamless and responsive user experience.
